@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A simple path tracer powered by WebGPU compute shaders. [Try the demo!](https://iamferm.in/webgpu-path-tracing)",
   "main": "index.html",
+  "type": "module",
   "scripts": {
     "start": "vite --open",
     "build": "vite build",
