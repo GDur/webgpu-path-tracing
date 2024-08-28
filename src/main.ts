@@ -1,5 +1,8 @@
-import outputWGSL from './output.js';
-import computeWGSL from './compute.js';
+// @ts-ignore
+import outputWGSL from './output.wgsl?raw'
+// @ts-ignore
+import computeWGSL from './compute.wgsl?raw'
+
 import scene from './scene.js';
 
 const canvas = document.querySelector("canvas")!
@@ -356,7 +359,7 @@ const onPointerMove = (e) => {
   pointerPrevX = e.clientX;
   pointerPrevY = e.clientY;
 
-  // reset renderloop
+  // reset render loop
   step = 0;
   if (requestId) cancelAnimationFrame(requestId);
   requestId = requestAnimationFrame(renderLoop);
