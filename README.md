@@ -34,6 +34,14 @@ npm i
 npm start
 ```
 
+## how to build
+
+```
+cd webgpu-path-tracing
+npm i
+npm run build
+```
+
 ## You may also like...
 
 * [Raytracing in one weekend](https://raytracing.github.io/)
