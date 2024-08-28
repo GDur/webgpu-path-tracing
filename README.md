@@ -2,7 +2,7 @@
 
 A simple path tracer powered by WebGPU compute shaders. [Try the demo!](https://iamferm.in/webgpu-path-tracing)
 
-![screenshot](./image.png)
+![screenshot](./public/image.png)
 
 ## Path tracer? WebGPU?
 
