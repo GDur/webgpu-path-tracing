@@ -2,6 +2,8 @@ import outputWGSL from './output.js';
 import computeWGSL from './compute.js';
 import scene from './scene.js';
 
+const canvas = document.querySelector("canvas")!
+
 // when WebGPU is not available, show a video instead
 const showVideo = (error) => {
   const disclaimer = document.createElement("div");
@@ -18,20 +20,21 @@ const showVideo = (error) => {
   video.width = 512;
   video.setAttribute("playsinline", "playsinline");
 
-  const viewport = document.querySelector("#viewport");
+  const viewport = document.querySelector("#viewport")!;
   viewport.append(disclaimer);
   viewport.append(video);
   canvas.style.display = "none";
 }
 
 // Initialize WebGPU context
-const canvas = document.querySelector("canvas");
+// @ts-ignore
 if (!navigator.gpu) {
   const e = "This browser does not support WebGPU.";
   showVideo(e);
   throw new Error(e);
 }
 
+// @ts-ignore
 const adapter = await navigator.gpu.requestAdapter();
 if (!adapter) {
   const e = "Your GPU does not support WebGPU.";
@@ -41,7 +44,9 @@ if (!adapter) {
 
 const device = await adapter.requestDevice();
 
-const context = canvas.getContext("webgpu");
+const context = canvas.getContext("webgpu")! as any
+
+// @ts-ignore
 const canvasFormat = navigator.gpu.getPreferredCanvasFormat();
 context.configure({
   device: device,
@@ -83,8 +88,12 @@ const textureA = device.createTexture({
   },
   format: 'rgba8unorm',
   usage:
+
+    // @ts-ignore
     GPUTextureUsage.COPY_DST |
+    // @ts-ignore
     GPUTextureUsage.STORAGE_BINDING |
+    // @ts-ignore
     GPUTextureUsage.TEXTURE_BINDING,
 });
 
@@ -95,8 +104,11 @@ const textureB = device.createTexture({
   },
   format: 'rgba8unorm',
   usage:
+    // @ts-ignore
     GPUTextureUsage.COPY_DST |
+    // @ts-ignore
     GPUTextureUsage.STORAGE_BINDING |
+    // @ts-ignore
     GPUTextureUsage.TEXTURE_BINDING,
 });
 
@@ -149,6 +161,7 @@ const computePipeline = device.createComputePipeline({
 const vertexBuffer = device.createBuffer({
   label: "vertex buffer",
   size: scene.vertexArray.byteLength,
+  // @ts-ignore
   usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
 });
 device.queue.writeBuffer(vertexBuffer, 0, scene.vertexArray);
@@ -156,6 +169,7 @@ device.queue.writeBuffer(vertexBuffer, 0, scene.vertexArray);
 const indexBuffer = device.createBuffer({
   label: "index buffer",
   size: scene.indexArray.byteLength,
+  // @ts-ignore
   usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
 });
 device.queue.writeBuffer(indexBuffer, 0, scene.indexArray);
@@ -163,6 +177,7 @@ device.queue.writeBuffer(indexBuffer, 0, scene.indexArray);
 const meshBuffer = device.createBuffer({
   label: "mesh buffer",
   size: scene.meshArray.byteLength,
+  // @ts-ignore
   usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
 });
 device.queue.writeBuffer(meshBuffer, 0, scene.meshArray);
@@ -170,6 +185,7 @@ device.queue.writeBuffer(meshBuffer, 0, scene.meshArray);
 const materialBuffer = device.createBuffer({
   label: "material buffer",
   size: scene.materialArray.byteLength,
+  // @ts-ignore
   usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
 });
 device.queue.writeBuffer(materialBuffer, 0, scene.materialArray);
@@ -189,6 +205,7 @@ computeUniformsUint[1] = 1;       // samples
 const computeUniformsBuffer = device.createBuffer({
   label: "Compute uniforms",
   size: computeUniformsArray.byteLength,
+  // @ts-ignore
   usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
 });
 device.queue.writeBuffer(computeUniformsBuffer, 0, computeUniformsArray);
@@ -346,12 +363,12 @@ const onPointerMove = (e) => {
 }
 
 // mobile touch events
-canvas.addEventListener('touchmove', onPointerMove);
+canvas.addEventListener('touchmove', onPointerMove, { passive: true });
 canvas.addEventListener('touchstart', (e) => {
   pointerPrevX = e.touches[0].clientX;
   pointerPrevY = e.touches[0].clientY;
   pointerMoving = true;
-});
+}, { passive: true });
 
 canvas.addEventListener('touchend', (e) => {
   pointerMoving = false;
