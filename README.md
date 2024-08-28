@@ -26,6 +26,14 @@ You can try the demo [here](https://iamferm.in/webgpu-path-tracing).
 
 If you prefer to run it locally, you can just clone the repository and use your favourite web server; it doesn't have any dependencies!
 
+## how to run locally or develop
+
+```
+cd webgpu-path-tracing
+npm i
+npm start
+```
+
 ## You may also like...
 
 * [Raytracing in one weekend](https://raytracing.github.io/)

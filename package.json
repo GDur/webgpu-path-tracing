@@ -1,0 +1,15 @@
+{
+  "name": "webgpu-path-tracing",
+  "version": "1.0.0",
+  "description": "A simple path tracer powered by WebGPU compute shaders. [Try the demo!](https://iamferm.in/webgpu-path-tracing)",
+  "main": "index.html",
+  "scripts": {
+    "start": "vite --open",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ferminLR",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^5.4.2"
+  }
+}

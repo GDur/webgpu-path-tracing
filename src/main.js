@@ -7,7 +7,7 @@ const showVideo = (error) => {
   const disclaimer = document.createElement("div");
   disclaimer.id = "error";
   disclaimer.innerHTML = "⚠️ " + error + "<br> 🎥 This a video recording of the scene.";
-  
+
   const video = document.createElement("video");
   video.src = "./video.mp4";
   video.poster = "./image.png";
@@ -67,7 +67,7 @@ const renderOutputPipeline = device.createRenderPipeline({
     targets: [{
       format: canvasFormat
     }]
-},
+  },
 });
 
 const sampler = device.createSampler({
@@ -278,7 +278,7 @@ const renderLoop = () => {
   // Do the compute 
   const computePass = encoder.beginComputePass();
   computePass.setPipeline(computePipeline);
-  computePass.setBindGroup(0, computeBindGroup[step%2]);
+  computePass.setBindGroup(0, computeBindGroup[step % 2]);
   computePass.dispatchWorkgroups(64, 64);
   computePass.end();
 
@@ -292,23 +292,23 @@ const renderLoop = () => {
     }]
   });
   pass.setPipeline(renderOutputPipeline);
-  pass.setBindGroup(0, renderOutputBindGroup[step%2]);
+  pass.setBindGroup(0, renderOutputBindGroup[step % 2]);
   pass.draw(6, 1);
   pass.end();
 
   // Update uniforms buffer
   initialSeed += 0.01;
   computeUniformsFloat[0] = initialSeed;
-  computeUniformsFloat[1] = 1.0/++step;
+  computeUniformsFloat[1] = 1.0 / ++step;
   computeUniformsFloat[2] = cameraAzimuth;
   computeUniformsFloat[3] = cameraElevation;
 
   // when moving the camera, to improve responsiveness
   // reduce samples and bounces to the minimum
-  if (pointerMoving){
+  if (pointerMoving) {
     computeUniformsUint[0] = 1;  // bounces
     computeUniformsUint[1] = 1;  // samples
-  }else{
+  } else {
     computeUniformsUint[0] = 4;
     computeUniformsUint[1] = 5;
   }
@@ -319,7 +319,7 @@ const renderLoop = () => {
   device.queue.submit([encoder.finish()]);
 
   // just one pass when moving the camera
-  if (pointerMoving) return; 
+  if (pointerMoving) return;
 
   requestId = requestAnimationFrame(renderLoop);
 }
@@ -332,16 +332,16 @@ let pointerMoving = false;
 
 const onPointerMove = (e) => {
   e.preventDefault();
-  e = typeof(e.touches) != 'undefined' ? e.touches[0] : e;
+  e = typeof (e.touches) != 'undefined' ? e.touches[0] : e;
 
-  cameraAzimuth += (e.clientX - pointerPrevX) * Math.PI/180;
-  cameraElevation += (e.clientY - pointerPrevY) * Math.PI/180;
+  cameraAzimuth += (e.clientX - pointerPrevX) * Math.PI / 180;
+  cameraElevation += (e.clientY - pointerPrevY) * Math.PI / 180;
   pointerPrevX = e.clientX;
   pointerPrevY = e.clientY;
 
   // reset renderloop
   step = 0;
-  if(requestId) cancelAnimationFrame(requestId);
+  if (requestId) cancelAnimationFrame(requestId);
   requestId = requestAnimationFrame(renderLoop);
 }
 
@@ -349,7 +349,7 @@ const onPointerMove = (e) => {
 canvas.addEventListener('touchmove', onPointerMove);
 canvas.addEventListener('touchstart', (e) => {
   pointerPrevX = e.touches[0].clientX;
-  pointerPrevY = e.touches[0].clientY;  
+  pointerPrevY = e.touches[0].clientY;
   pointerMoving = true;
 });
 
@@ -367,7 +367,7 @@ canvas.addEventListener('mousedown', (e) => {
 });
 
 addEventListener('mouseup', () => {
-  canvas.removeEventListener( 'mousemove', onPointerMove );
+  canvas.removeEventListener('mousemove', onPointerMove);
   pointerMoving = false;
   requestId = requestAnimationFrame(renderLoop);
 });
