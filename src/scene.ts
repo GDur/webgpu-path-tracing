@@ -3,16 +3,17 @@
 const vertexArray = new Float32Array(4 * 36);
 const indexArray = new Uint32Array(4 * 36);
 
-var totalVertices = 0;
-const addVertex = (x, y, z) => {
+let totalVertices = 0;
+
+const addVertex = (x: number, y: number, z: number) => {
   vertexArray[totalVertices++] = x;
   vertexArray[totalVertices++] = y;
   vertexArray[totalVertices++] = z;
   vertexArray[totalVertices++] = 0.0;
 }
 
-var totalIndices = 0;
-const addFace = (v0, v1, v2) => {
+let totalIndices = 0;
+const addFace = (v0: number, v1: number, v2: number) => {
   indexArray[totalIndices++] = v0 - 1;
   indexArray[totalIndices++] = v1 - 1;
   indexArray[totalIndices++] = v2 - 1;
@@ -21,25 +22,27 @@ const addFace = (v0, v1, v2) => {
 
 const meshArray = new Uint32Array(4 * 6);
 const materialArray = new Float32Array(12 * 6); // needed padding
-var meshArrayIndex = 0;
-var materialArrayIndex = 0;
+let meshArrayIndex = 0;
+let materialArrayIndex = 0;
 let vi, fi;
 
-function color(r, g, b, a) {
-  this.r = r;
-  this.g = g;
-  this.b = b;
-  this.a = a;
+class Color {
+  constructor(
+    public r: number,
+    public g: number,
+    public b: number,
+    public a: number) { }
 }
 
-function material(color, emission, metallic, roughness) {
-  this.color = color;
-  this.emission = emission;
-  this.metallic = metallic;
-  this.roughness = roughness;
+class Material {
+  constructor(
+    public color: Color,
+    public emission: Color,
+    public metallic: number,
+    public roughness: number) { }
 }
 
-const pushMaterial = (mat) => {
+const pushMaterial = (mat: Material) => {
   materialArray[materialArrayIndex++] = mat.color.r;
   materialArray[materialArrayIndex++] = mat.color.g;
   materialArray[materialArrayIndex++] = mat.color.b;
@@ -55,17 +58,17 @@ const pushMaterial = (mat) => {
 }
 
 // Materials
-const transparentBlack = new color(0.0, 0.0, 0.0, 0.0);
-const gray = new color(0.73, 0.73, 0.73, 1.0);
-const red = new color(0.65, 0.05, 0.05, 1.0);
-const green = new color(0.12, 0.45, 0.15, 1.0);
-const light = new color(15.0, 15.0, 15.0, 1.0);
+const transparentBlack = new Color(0.0, 0.0, 0.0, 0.0);
+const gray = new Color(0.73, 0.73, 0.73, 1.0);
+const red = new Color(0.65, 0.05, 0.05, 1.0);
+const green = new Color(0.12, 0.45, 0.15, 1.0);
+const light = new Color(15.0, 15.0, 15.0, 1.0);
 
-const grayMaterial = new material(gray, transparentBlack, 0.0, 0.0);
-const metalMaterial = new material(gray, transparentBlack, 1.0, 0.0);
-const lightMaterial = new material(gray, light, 0.0, 0.0);
-const redMaterial = new material(red, transparentBlack, 0.0, 0.0);
-const greenMaterial = new material(green, transparentBlack, 0.0, 0.0);
+const grayMaterial = new Material(gray, transparentBlack, 0.0, 0.0);
+const metalMaterial = new Material(gray, transparentBlack, 1.0, 0.0);
+const lightMaterial = new Material(gray, light, 0.0, 0.0);
+const redMaterial = new Material(red, transparentBlack, 0.0, 0.0);
+const greenMaterial = new Material(green, transparentBlack, 0.0, 0.0);
 
 // Floor, back wall and ceiling
 vi = totalVertices / 4;
