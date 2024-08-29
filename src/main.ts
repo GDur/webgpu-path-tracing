@@ -4,11 +4,17 @@ import outputWGSL from './output.wgsl?raw'
 import computeWGSL from './compute.wgsl?raw'
 
 import scene from './scene.js';
+import { CONFIG } from './settings.js';
+
+const size = CONFIG.size
 
 const canvas = document.querySelector("canvas")!
 
+canvas.setAttribute('height', size.height + '')
+canvas.setAttribute('width', size.width + '')
+
 // when WebGPU is not available, show a video instead
-const showVideo = (error) => {
+const showVideo = (error: string) => {
   const disclaimer = document.createElement("div");
   disclaimer.id = "error";
   disclaimer.innerHTML = "⚠️ " + error + "<br> 🎥 This a video recording of the scene.";
@@ -19,13 +25,14 @@ const showVideo = (error) => {
   video.autoplay = true;
   video.loop = true;
   video.muted = true;
-  video.height = 512;
-  video.width = 512;
+  video.height = size.height;
+  video.width = size.width;
   video.setAttribute("playsinline", "playsinline");
 
   const viewport = document.querySelector("#viewport")!;
   viewport.append(disclaimer);
   viewport.append(video);
+
   canvas.style.display = "none";
 }
 
@@ -85,10 +92,7 @@ const sampler = device.createSampler({
 
 // Two textures for ping pong swap to accumulate compute passes
 const textureA = device.createTexture({
-  size: {
-    width: 512,
-    height: 512,
-  },
+  size,
   format: 'rgba8unorm',
   usage:
 
@@ -101,10 +105,7 @@ const textureA = device.createTexture({
 });
 
 const textureB = device.createTexture({
-  size: {
-    width: 512,
-    height: 512,
-  },
+  size,
   format: 'rgba8unorm',
   usage:
     // @ts-ignore
@@ -287,7 +288,7 @@ let initialSeed = 100.0;
 let step = 0;
 let cameraAzimuth = 0.0;
 let cameraElevation = 0.0;
-let requestId;
+let requestId: number;
 
 const renderLoop = () => {
 
@@ -350,7 +351,7 @@ requestId = requestAnimationFrame(renderLoop);
 let pointerPrevX = 0, pointerPrevY = 0;
 let pointerMoving = false;
 
-const onPointerMove = (e) => {
+const onPointerMove = (e: any) => {
   e.preventDefault();
   e = typeof (e.touches) != 'undefined' ? e.touches[0] : e;
 
