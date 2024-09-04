@@ -9,9 +9,11 @@ import { CONFIG } from './settings.js';
 const size = CONFIG.size
 
 const canvas = document.querySelector("canvas")!
+canvas.width = size.width;
+canvas.height = size.height;
 
-canvas.setAttribute('height', size.height + '')
-canvas.setAttribute('width', size.width + '')
+canvas.setAttribute('height', size.height + 'px')
+canvas.setAttribute('width', size.width + 'px')
 
 // when WebGPU is not available, show a video instead
 const showVideo = (error: string) => {
@@ -195,14 +197,16 @@ const materialBuffer = device.createBuffer({
 device.queue.writeBuffer(materialBuffer, 0, scene.materialArray);
 
 // Compute shader uniforms
-const computeUniformsArray = new ArrayBuffer(24);
-const computeUniformsFloat = new Float32Array(computeUniformsArray, 0, 4);
-const computeUniformsUint = new Uint32Array(computeUniformsArray, 16, 2);
+const computeUniformsArray = new ArrayBuffer(32);
+const computeUniformsFloat = new Float32Array(computeUniformsArray, 0, 6);
+const computeUniformsUint = new Uint32Array(computeUniformsArray, 24, 2);
 
 computeUniformsFloat[0] = 100.0;  // seed
 computeUniformsFloat[1] = 1.0;    // weight
 computeUniformsFloat[2] = 0.0;    // cam_azimuth
 computeUniformsFloat[3] = 0.0;    // cam_elevation
+computeUniformsFloat[4] = size.width;
+computeUniformsFloat[5] = size.height;
 computeUniformsUint[0] = 1;       // bounces
 computeUniformsUint[1] = 1;       // samples
 
@@ -290,6 +294,9 @@ let cameraAzimuth = 0.0;
 let cameraElevation = 0.0;
 let requestId: number;
 
+const workgroupCountX = size.width >> 3; // int(width/8)
+const workgroupCountY = size.height >> 3;
+
 const renderLoop = () => {
 
   if (step > 100) return; // stop passes after 100 steps
@@ -300,7 +307,7 @@ const renderLoop = () => {
   const computePass = encoder.beginComputePass();
   computePass.setPipeline(computePipeline);
   computePass.setBindGroup(0, computeBindGroup[step % 2]);
-  computePass.dispatchWorkgroups(64, 64);
+  computePass.dispatchWorkgroups(workgroupCountX, workgroupCountY, 1);
   computePass.end();
 
   // Output render
