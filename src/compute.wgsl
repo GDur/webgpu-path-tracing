@@ -39,6 +39,7 @@ struct Uniforms {
   weight: f32,
   cam_azimuth: f32,
   cam_elevation: f32,
+  size: vec2f,
   bounces: u32,
   samples: u32,
 };
@@ -243,7 +244,7 @@ fn compute_main(@builtin(global_invocation_id) GlobalInvocationID: vec3u) {
 
   // set the private vars
   let pos = GlobalInvocationID.xy;
-  pixel = vec2f(pos)/512.0;
+  pixel = vec2f(pos) / uniforms.size;
   seed = uniforms.seed; // initial seed
 
   // setup camera
@@ -270,7 +271,8 @@ fn compute_main(@builtin(global_invocation_id) GlobalInvocationID: vec3u) {
     let camera_disk = 0.00001*random_in_unit_disk(); // camera aperture
     ray.origin = camera_center + vec3(camera_disk, 0.0);
 
-    let pos_norm = (vec2f(pos)+v2random())/256.0 - 1.0;
+    var pos_norm = (vec2f(pos)+v2random()) / uniforms.size * 2.0 - 1.0;
+    pos_norm.x *= uniforms.size.x / uniforms.size.y; // aspect ratio correction
     let pos_in_camera_plane = vec3(ray.origin.xy + pos_norm*0.0125, ray.origin.z - 0.035);
     ray.direction = normalize(pos_in_camera_plane - ray.origin);
     
